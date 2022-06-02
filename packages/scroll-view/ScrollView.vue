@@ -2,7 +2,7 @@
     <div
         ref="wrapper"
         class="wrapper"
-        :style="`--color: ${color};--size:${remSize};`"
+        :style="`--color: ${color};--size:${vwSize};`"
     >
         <div class="content">
             <!-- 下拉刷新 -->
@@ -21,7 +21,7 @@
                     <slot name="refreshing">
                         <div class="loading-wrapper">
                             <div class="loading"></div>
-                            <div class="tips">{{ refreshingTest }}</div>
+                            <div class="tips">{{ refreshingText }}</div>
                         </div>
                     </slot>
                 </div>
@@ -49,7 +49,7 @@
                     <slot name="loading">
                         <div class="loading-wrapper">
                             <div class="loading"></div>
-                            <div class="tips">{{ refreshingTest }}</div>
+                            <div class="tips">{{ refreshingText }}</div>
                         </div>
                     </slot>
                 </div>
@@ -94,7 +94,7 @@ export default {
         // 提示文案的字体大小
         size: {
             type: Number | String,
-            default: 26,
+            default: 28,
         },
         // 是否开启上拉加载
         openLoad: {
@@ -148,7 +148,7 @@ export default {
             default: "手指释放刷新",
         },
         // 刷新过程的提示文案
-        refreshingTest: {
+        refreshingText: {
             type: String,
             default: "刷新中...",
         },
@@ -168,14 +168,16 @@ export default {
             pulling: false,
             loosing: false,
             success: false,
-            scaleRatio: 1,
         };
     },
     mounted() {
-        this.scaleRatio =
-            37.5 /
-            getComputedStyle(document.documentElement).fontSize.split("px")[0];
-        setTimeout(this.__initScroll(), 20);
+        setTimeout(() => {
+            this.__initScroll();
+            // 如果开启了上拉加载的功能，首次组件渲染完成就通知父组件去拉数据
+            if (this.openLoad) {
+                this.pullingUpHandler();
+            }
+        }, 20);
     },
     methods: {
         // 初始化滚动视图组件
@@ -204,6 +206,9 @@ export default {
             this.scroll && this.addEvent();
         },
         addEvent() {
+            // 派发初始化成功事件
+            this.$emit("ready", this.scroll);
+
             // 派发滚动事件
             this.scroll.on("scroll", (pos) => {
                 this.$emit("scroll", pos);
@@ -252,9 +257,9 @@ export default {
         },
     },
     computed: {
-        remSize() {
+        vwSize() {
             if (!isNaN(Number(this.size)) || this.size.indexOf("px") !== -1) {
-                return `${(parseFloat(this.size) / 75) * this.scaleRatio}rem`;
+                return `${parseFloat(this.size) / 7.5}vw`;
             } else {
                 return this.size;
             }
@@ -311,7 +316,7 @@ export default {
 }
 
 .wrapper .tips {
-    padding: rem(44px 0);
+    padding: 34px 0;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -327,19 +332,19 @@ export default {
 }
 
 .wrapper .loading-wrapper .loading {
-    width: calc(var(--size) * 1.3);
-    height: calc(var(--size) * 1.3);
-    border-width: rem(3px);
+    box-sizing: border-box;
+    width: calc(var(--size) * 1.2);
+    height: calc(var(--size) * 1.2);
+    border-width: 2px;
     border-style: solid;
     border-color: var(--color);
     border-top-color: transparent;
     border-radius: 100%;
-    transform-origin: center center;
     animation: circle infinite 0.75s linear;
 }
 
 .wrapper .loading-wrapper .tips {
-    margin-left: rem(20px);
+    margin-left: 20px;
 }
 
 @keyframes circle {

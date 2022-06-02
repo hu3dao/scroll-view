@@ -1,23 +1,36 @@
 {
-  "name": "scroll-view",
-  "private": true,
-  "version": "0.0.0",
-  "scripts": {
-    "dev": "vite",
-    "build": "vite build",
-    "preview": "vite preview"
-  },
-  "devDependencies": {
-    "postcss-rem": "^2.0.2",
-    "vite": "^2.9.9",
-    "vite-plugin-vue2": "^2.0.1"
-  },
-  "dependencies": {
-    "@better-scroll/core": "^2.4.2",
-    "@better-scroll/observe-dom": "^2.4.2",
-    "@better-scroll/pull-down": "^2.4.2",
-    "@better-scroll/pull-up": "^2.4.2",
-    "vue": "2.6.14",
-    "vue-template-compiler": "2.6.14"
-  }
+    "name": "@husandao/scroll-view",
+    "private": true,
+    "version": "1.0.1",
+    "author": "hdb",
+    "description": "a vue2.x component base on better-scroll.js",
+    "keywords": [
+        "vue",
+        "better-scroll.js"
+    ],
+    "license": "MIT",
+    "main": "dist/scroll-view.umd.js",
+    "module": "dist/scroll-view.es.js",
+    "scripts": {
+        "dev": "vite",
+        "build": "vite build",
+        "preview": "vite preview"
+    },
+    "devDependencies": {
+        "postcss-px-to-viewport": "^1.1.1",
+        "vite": "^2.9.9",
+        "vite-plugin-vue2": "^2.0.1"
+    },
+    "dependencies": {
+        "@better-scroll/core": "^2.4.2",
+        "@better-scroll/observe-dom": "^2.4.2",
+        "@better-scroll/pull-down": "^2.4.2",
+        "@better-scroll/pull-up": "^2.4.2",
+        "vue": "2.6.14",
+        "vue-template-compiler": "2.6.14"
+    },
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/hu3dao/scroll-view"
+    }
 }

@@ -1,7 +1,7 @@
 import { defineConfig } from "vite"
 import { createVuePlugin } from "vite-plugin-vue2"
 import { resolve } from "path"
-import postcssRem from "postcss-rem"
+import postcssPxToViewport from "postcss-px-to-viewport"
 
 export default defineConfig({
     plugins: [createVuePlugin()],
@@ -23,8 +23,9 @@ export default defineConfig({
     },
     css: {
         postcss: {
-            plugins: [postcssRem({
-                baseline: 75
+            plugins: [postcssPxToViewport({
+                viewportWidth: 750,
+                exclude: [/node_modules/, /\/src\/assets\//, /index.html/],
             })]
         }
     }
