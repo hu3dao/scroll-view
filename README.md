@@ -13,11 +13,14 @@ import ScrollView from "@husandao/scroll-view";
 import "@husandao/scroll-view/dist/style.css"
 Vue.use(ScrollView)
 ```
+## 注意事项
+better-scroll文档解释了滚动原理：在滚动方向上，第一个子元素的长度超过了容器的长度时就可以滚动，当使用发现滚动不了时，请检查子元素的长度是否超过了容器的长度
+
+<strong style="color: red; font-size: 18px">scroll-view组件内容元素在滚动方向上的长度必须大于容器元素，scroll-view的宽高设置为100%，所以父级元素要给定宽高</strong>
+
 ## 代码演示
 ### 基础用法
-better-scroll文档解释了滚动原理：在滚动方向上，第一个子元素的长度超过了容器的长度时就可以滚动
 
-所以对于scroll-view组件内容元素在滚动方向上的长度必须大于容器元素，scroll-view的设置为100%，所以父级元素要给定宽高
 ```html
 <div class="test">
     <!-- 滚动区域 -->
@@ -72,16 +75,16 @@ export default {
 scroll-view组件通过loading和finished两个变量控制加载状态。当组件滚动到底部时，scroll-view组件会给父组件抛出load事件同时将父组件的loading设置为true，父组件监听load事件发起异步操作更新数据，数据更新完毕后，将loading设置为false即可。如果数据已经全部加载完了，就将finishe设置为true即可。
 ```html
 <div class="test">
-        <!-- 滚动区域 -->
-        <scroll-view
-            :openLoad="true"
-            :loading.sync="loading"
-            :finished="finished"
-            @load="onLoad"
-        >
-            <div class="cell" v-for="i in list" :key="i">{{ i }}</div>
-        </scroll-view>
-    </div>
+    <!-- 滚动区域 -->
+    <scroll-view
+        :openLoad="true"
+        :loading.sync="loading"
+        :finished="finished"
+        @load="onLoad"
+    >
+        <div class="cell" v-for="i in list" :key="i">{{ i }}</div>
+    </scroll-view>
+</div>
 ```
 ```js
 export default {
