@@ -456,6 +456,7 @@ export default {
 | successDuration | 刷新成功提示展示时长(ms) | Number | 0 |
 | color | 提示文案的颜色 | String | #000 |
 | size | 提示文案的字体大小 | Number或String | 28 |
+
 ### event
 | 事件名 | 说明 | 回调参数 |
 | --- | --- | --- |
@@ -463,6 +464,7 @@ export default {
 | scroll | 页面滚动时触发 | {x: 当前x轴滚动距离, y: 当前y轴滚动距离} |
 | load | 上拉加载时触发 | - |
 | refresh | 下拉刷新时触发 | - |
+
 ### slots
 | 名称 | 说明 | 参数 |
 | --- | --- | --- |

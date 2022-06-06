@@ -1,0 +1,9 @@
+.DS_Store
+node_modules/
+packages/
+src/
+test/
+vite.config.js
+pnpm-lock.yaml
+favicon.svg
+*.html

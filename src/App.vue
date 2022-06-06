@@ -69,7 +69,7 @@ export default {
 }
 .cell {
     height: 108px;
-    font-size: 18px;
+    font-size: 26px;
     border-bottom: 1px solid #ccc;
     line-height: 108px;
     text-align: center;

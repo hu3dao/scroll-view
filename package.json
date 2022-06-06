@@ -1,7 +1,7 @@
 {
     "name": "@husandao/scroll-view",
     "private": false,
-    "version": "1.0.2",
+    "version": "1.0.3",
     "author": "hdb",
     "description": "a vue2.x component base on better-scroll.js",
     "keywords": [
