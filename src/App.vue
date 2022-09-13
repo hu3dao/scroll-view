@@ -34,9 +34,13 @@ export default {
                     this.list = [];
                     this.refreshing = false;
                 }
-                for (let i = 0; i < 10; i++) {
+
+                if(!this.finished) {
+                  for (let i = 0; i < 10; i++) {
                     this.list.push(this.list.length + 1);
                 }
+                }
+                
 
                 // 加载状态结束
                 this.loading = false;
@@ -68,10 +72,10 @@ export default {
     background: #fff;
 }
 .cell {
-    height: 108px;
+    height: 138px;
     font-size: 26px;
     border-bottom: 1px solid #ccc;
-    line-height: 108px;
+    line-height: 138px;
     text-align: center;
 }
 </style>
