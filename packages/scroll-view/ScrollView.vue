@@ -35,17 +35,12 @@
             <slot></slot>
             <!-- 上拉加载 -->
             <div class="load-tips" v-if="openLoad">
-                <div v-show="finished">
-                    <slot name="finished">
-                        <div class="tips">{{ finishedText }}</div>
-                    </slot>
-                </div>
-                <div v-show="!finished && !loading">
+                <div v-show="!loading">
                     <slot name="loadingBefore">
-                        <div class="tips">{{ loadingBeforeText }}</div>
+                        <div class="tips">{{ loadText }}</div>
                     </slot>
                 </div>
-                <div v-show="!finished && loading">
+                <div v-show="loading">
                     <slot name="loading">
                         <div class="loading-wrapper">
                             <div class="loading"></div>
@@ -75,8 +70,14 @@ const defaultConfig = {
     scrollX: false,
     scrollY: true,
     // 开启对 content 以及 content 子元素 DOM 改变的探测
-    observeDOM: true,
+    // observeDOM: true,
 };
+const pullupStateMap = Object.freeze({
+  DEFAULT: 0,
+  INSIDE: 1,
+  OUTSIDE: 2
+
+})
 export default {
     name: "ScrollView",
     props: {
@@ -106,7 +107,7 @@ export default {
             type: Boolean,
             required: false,
         },
-        // 是否已加载完成
+        // 本次上拉加载是否有新数据
         finished: {
             type: Boolean,
             required: false,
@@ -168,6 +169,11 @@ export default {
             pulling: false,
             loosing: false,
             success: false,
+            pullupState: pullupStateMap.DEFAULT,
+            pullupStateMap,
+            loadText: "上拉加载",
+            lock: false,
+            preMaxScrollY: 0
         };
     },
     mounted() {
@@ -177,6 +183,7 @@ export default {
             if (this.openLoad) {
                 this.pullingUpHandler();
             }
+             
         }, 20);
     },
     methods: {
@@ -187,12 +194,16 @@ export default {
             }
 
             // 合并初始化的配置项
-            let config = {};
+            let config = {bounce: {top: false, bottom: false}};
             if (this.openRefresh) {
-                config.bounce = { top: true, bottom: false };
+                config.bounce.top = true
                 config.pullDownRefresh = { threshold: 60, stop: 60 };
             }
-            config.pullUpLoad = this.openLoad;
+            if(this.openLoad) {
+              config.bounce.bottom = true
+              config.pullUpLoad = {threshold: -60};
+            }
+            
 
             config = Object.assign(
                 {},
@@ -212,10 +223,23 @@ export default {
             // 派发滚动事件
             this.scroll.on("scroll", (pos) => {
                 this.$emit("scroll", pos);
+                if(this.openLoad) {
+                  this.checkPullUpThreshold()
+                }
             });
             if (this.openLoad) {
                 // 监听上拉加载事件
-                this.scroll.on("pullingUp", this.pullingUpHandler);
+                // this.scroll.on("pullingUp", this.pullingUpHandler);
+                // 监听end事件
+                this.scroll.on("touchEnd", () => {
+                  if(this.pullupState === this.pullupStateMap.INSIDE) {
+                    if(this.lock) return
+                    this.lock = true
+                    console.log("加载更多");
+                    this.scroll.maxScrollY -= 60
+                    this.pullingUpHandler()
+                  }
+                })
             }
             if (this.openRefresh) {
                 // 监听下拉刷新事件(3个阶段)
@@ -230,9 +254,25 @@ export default {
                 this.scroll.on("pullingDown", this.pullingDownHandler);
             }
         },
+        // 检查上拉的阈值
+        checkPullUpThreshold() {
+          if(this.locateInsideThresholdBoundary()) {
+            this.pullupState = this.pullupStateMap.INSIDE
+            this.loadText = "释放加载更多"
+          } else {
+            this.pullupState = this.pullupStateMap.OUTSIDE
+            this.loadText = "上拉加载"
+          }
+        },
+        // 是否定位在阈值内
+        locateInsideThresholdBoundary() {
+          return this.scroll.y <= this.scroll.maxScrollY - 60
+        },
+
         // 处理上拉加载
         pullingUpHandler() {
             this.$emit("update:loading", true);
+            this.$emit("update:finished", false)
             this.$emit("load");
         },
         // 处理下拉刷新
@@ -255,6 +295,9 @@ export default {
             this.loosing = false;
             this.success = false;
         },
+        finishPullUp() {
+          this.lock = false
+        }
     },
     computed: {
         vwSize() {
@@ -268,11 +311,21 @@ export default {
     watch: {
         // 监听到loading结束就刷新
         loading(val) {
-            if (!val) {
+            if(!val) {
+              if(this.finished) {
+                this.loadText = "没有更多了"
+                setTimeout(() => {
+                  this.refresh()
+                  this.finishPullUp()
+                }, 300)
+              } else {
+                this.loadText = "加载成功"
                 this.$nextTick(() => {
-                    this.refresh;
-                    this.scroll.finishPullUp();
-                });
+                  this.refresh()
+                  this.finishPullUp()
+                })
+              }
+              
             }
         },
         // 监听到refreshing结束就刷新
@@ -292,12 +345,6 @@ export default {
                 }
             }
         },
-        // 监听到加载完成后，关闭上拉加载
-        finished(val) {
-            if (val) {
-                this.$nextTick(this.scroll.closePullUp);
-            }
-        },
     },
 };
 </script>
@@ -313,6 +360,12 @@ export default {
     position: absolute;
     width: 100%;
     transform: translateY(-100%) translateZ(1px);
+}
+
+.wrapper .load-tips {
+  position: absolute;
+  width: 100%;
+  transform: translateZ(1px);
 }
 
 .wrapper .tips {
